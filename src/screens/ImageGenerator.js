@@ -13,7 +13,6 @@ const ImageFetcher = () => {
         prompt:inputText
     }
     try {
-      // Replace this with your actual API call
       const response = await axios.post('http://10.0.2.2:3002/image-generator',data)
       setImageUrl(response.data.image_url);
     } catch (error) {
@@ -51,6 +50,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   input: {
+    alignItems:'flex-end',
+    justifyContent:'flex-end',
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
