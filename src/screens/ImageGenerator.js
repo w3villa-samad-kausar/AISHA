@@ -1,6 +1,19 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { View, TextInput,  Image, Modal, ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  TextInput,
+  Image,
+  Modal,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from 'react-native';
+import Config from 'react-native-config';
+
+const apiKey=Config.CORCEL_API_KEY
 
 const ImageFetcher = () => {
   const [inputText, setInputText] = useState('');
@@ -9,12 +22,27 @@ const ImageFetcher = () => {
 
   const fetchImage = async () => {
     setIsLoading(true);
+    const url = 'https://api.corcel.io/v1/image/cortext/text-to-image';
+    const options = {
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        Authorization: apiKey,
+      },
+    };
+
     const data = {
-        prompt:inputText
-    }
+      messages: inputText,
+      model: 'cortext-image',
+      size: '1024x1024',
+      quality: 'standard',
+      provider: 'OpenAI',
+      steps: 30,
+      cfg_scale: 8,
+    };
     try {
-      const response = await axios.post('http://10.0.2.2:3002/image-generator',data)
-      setImageUrl(response.data.image_url);
+      const response = await axios.post(url, data, options);
+      setImageUrl(response.data[0].image_url);
     } catch (error) {
       console.error('Error fetching image:', error);
     } finally {
@@ -24,15 +52,25 @@ const ImageFetcher = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        value={inputText}
-        onChangeText={setInputText}
-        placeholder="Enter search term"
-      />
-      <TouchableOpacity style={styles.button} onPress={fetchImage}><Text style={styles.buttontext}>Gnerate Image</Text></TouchableOpacity>
-      {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
-      
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {imageUrl ? (
+          <Image source={{uri: imageUrl}} style={styles.image} />
+        ) : (
+          <Text style={styles.placeholderText}>No image to display</Text>
+        )}
+      </ScrollView>
+
+      <View style={styles.bottomContainer}>
+        <TextInput
+          style={styles.input}
+          value={inputText}
+          onChangeText={setInputText}
+          placeholder="Enter prompt to generate image"
+        />
+        <TouchableOpacity style={styles.button} onPress={fetchImage}>
+          <Text style={styles.buttonText}>Generate Image</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal visible={isLoading} transparent={true}>
         <View style={styles.modalContainer}>
@@ -46,24 +84,35 @@ const ImageFetcher = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomContainer: {
     padding: 20,
-    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
   },
   input: {
-    alignItems:'flex-end',
-    justifyContent:'flex-end',
-    height: 40,
-    borderColor: 'gray',
+    height: 60,
+    borderColor: 'black',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 10,
   },
   image: {
-    marginTop:50,
     width: '100%',
     height: 400,
     resizeMode: 'contain',
-    marginBottom: 10,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#888',
   },
   modalContainer: {
     flex: 1,
@@ -73,14 +122,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007bff',
-    height:40,
+    height: 40,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     alignItems: 'center',
-    },
-    buttontext: {
-        color:"white"
-    }
+  },
+  buttonText: {
+    color: 'white',
+  },
 });
 
 export default ImageFetcher;
