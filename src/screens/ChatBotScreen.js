@@ -1,6 +1,6 @@
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import chatComplete from '../helpers/chatComplete';
 
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -16,12 +16,16 @@ const ChatbotScreen = () => {
     let response = ''; // Clear response before new stream
     setMessages((prev) => [...prev, { sender: 'user', message: userMessage }]);
     setUserInput('');
+    const data={
+      message:userMessage
+    }
 
     // Simulating API streaming response
-    const apiResponse = await chatComplete(userMessage);
-    for (let i = 0; i < apiResponse.length; i++) {
+    const apiResponse = await axios.post('http://10.0.2.2:3000/api/chat-complete',data)
+    const content=apiResponse.data
+    for (let i = 0; i < content.length; i++) {
       await new Promise((resolve) => setTimeout(resolve, 5)); // Delay to simulate streaming
-      response += apiResponse[i];
+      response += content[i];
       setCurrentResponse(response);
     }
 

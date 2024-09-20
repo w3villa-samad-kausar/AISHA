@@ -11,9 +11,6 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import Config from 'react-native-config';
-
-const apiKey=Config.CORCEL_API_KEY
 
 const ImageFetcher = () => {
   const [inputText, setInputText] = useState('');
@@ -22,27 +19,12 @@ const ImageFetcher = () => {
 
   const fetchImage = async () => {
     setIsLoading(true);
-    const url = 'https://api.corcel.io/v1/image/cortext/text-to-image';
-    const options = {
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        Authorization: apiKey,
-      },
-    };
-
     const data = {
-      messages: inputText,
-      model: 'cortext-image',
-      size: '1024x1024',
-      quality: 'standard',
-      provider: 'OpenAI',
-      steps: 30,
-      cfg_scale: 8,
+      prompt: inputText,
     };
     try {
-      const response = await axios.post(url, data, options);
-      setImageUrl(response.data[0].image_url);
+      const response = await axios.post('http://10.0.2.2:3000/api/image-generator',data);
+      setImageUrl(response.data.image_url);
     } catch (error) {
       console.error('Error fetching image:', error);
     } finally {
@@ -104,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 10,
-    color:'black'
+    color: 'black',
   },
   image: {
     width: '100%',
