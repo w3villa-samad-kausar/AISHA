@@ -19,15 +19,21 @@ const ChatbotScreen = () => {
     const data={
       message:userMessage
     }
+    try {
+      
+      const apiResponse = await axios.post('http://10.0.2.2:3000/api/chat-complete',data)
+      const content=apiResponse?.data
+      const cleanText = content.replace(/[#*]/g, '');
+      for (let i = 0; i < cleanText.length; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 5)); // Delay to simulate streaming
+        response += cleanText[i];
+        setCurrentResponse(response);
+      }
+    } catch (error) {
+      console.log(error)
+    }
 
     // Simulating API streaming response
-    const apiResponse = await axios.post('http://10.0.2.2:3000/api/chat-complete',data)
-    const content=apiResponse.data
-    for (let i = 0; i < content.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 5)); // Delay to simulate streaming
-      response += content[i];
-      setCurrentResponse(response);
-    }
 
     setMessages((prev) => [...prev, { sender: 'bot', message: response }]);
     setCurrentResponse('');
@@ -113,6 +119,7 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   messageText: {
+    color:'black',
     fontSize: 16,
   },
   inputContainer: {

@@ -27,7 +27,6 @@ const imageGenerator = async (req, res) => {
   try {
     // Await the response from axios
     const response = await axios.post(url, data, options);
-
     // Send the JSON response back to the client
     res.status(200).json(response.data[0]); // This will send the image URL and other details from the API response.
   } catch (error) {
