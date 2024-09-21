@@ -11,6 +11,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
+import {errorToastMessage} from '../helpers/ToastMessage';
 
 const ImageFetcher = () => {
   const [inputText, setInputText] = useState('');
@@ -23,10 +24,13 @@ const ImageFetcher = () => {
       prompt: inputText,
     };
     try {
-      const response = await axios.post('http://10.0.2.2:3000/api/image-generator',data);
+      const response = await axios.post(
+        'http://10.0.2.2:3000/api/image-generator',
+        data,
+      );
       setImageUrl(response.data.image_url);
     } catch (error) {
-      console.error('Error fetching image:', error);
+      errorToastMessage('Error fetching image:');
     } finally {
       setIsLoading(false);
     }

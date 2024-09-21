@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { errorToastMessage } from '../helpers/ToastMessage';
 
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -30,7 +31,7 @@ const ChatbotScreen = () => {
         setCurrentResponse(response);
       }
     } catch (error) {
-      console.log(error)
+          errorToastMessage(error.message);
     }
 
     // Simulating API streaming response

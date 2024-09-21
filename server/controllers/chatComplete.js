@@ -1,8 +1,9 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const axios = require('axios');
-const { teacherPrompt } = require('../prompts/teacherPrompt');
+const teacherPrompt  = require('../prompts/teacherPrompt');
 const apiKey = process.env.CORCEL_API_KEY;
+
 
 const chatComplete = async (req, res) => {
   const message = req.body.message;
